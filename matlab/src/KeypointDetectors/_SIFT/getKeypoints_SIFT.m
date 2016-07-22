@@ -35,10 +35,21 @@ function [keypts] = getKeypoints_SIFT(img_info, p)
     param_nameKp =  p.optionalParametersKpName;
     out = [img_info.full_feature_prefix '_' methodName '_keypoints-' param_nameKp '-txt'];
     if ~exist(out, 'file')
-
+        fprintf(['File with features does not exist: "' out '"\n']);
+        
         in = img_info.image_name;
         in = strrep(in, 'image_gray', 'image_color');
-        opencvDetector(methodName, in, out);
+        try
+            opencvDetector(methodName, in, out);
+        catch
+            fprintf('\nCould not run "opencvDetector", trying with system()...\n');
+            [status, cmdout] = system(['../external/src/OpenCVWrapper/opencvDetector ' methodName ' ' in ' ' out]);
+            if status ~= 0
+                fprintf('\n');
+                error('Error when running "opencvDetector" with system(): \n%sRun "benchmark-orientation/matlab/external/methods/opencvDetector.py" python script to extract features first!\n', cmdout);                
+            end
+        end
+
     end
    
     [keypts, ~, ~] = loadFeatures(out);
