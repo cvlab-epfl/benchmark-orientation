@@ -42,8 +42,17 @@ function [keypts] = getKeypoints_SIFT(img_info, p)
         try
             opencvDetector(methodName, in, out);
         catch
-            fprintf('\nCould not run "opencvDetector", trying with system()...\n');
-            [status, cmdout] = system(['../external/src/OpenCVWrapper/opencvDetector ' methodName ' ' in ' ' out]);
+            fprintf('\nCould not run "opencvDetector" directly, trying with system()...\n');
+            
+            VENV = getenv('VIRTUAL_ENV');
+            if ~strcmpi(VENV, '')
+                prefix = ['LD_LIBRARY_PATH=' VENV '/lib/'];
+            else
+                prefix = ['LD_LIBRARY_PATH='];
+            end
+            com = ['(cd ../external/src/OpenCVWrapper/;' prefix '; ./opencvDetector ' methodName ' ' in ' ' out ')'];
+            [status, cmdout] = system(com);
+            
             if status ~= 0
                 fprintf('\n');
                 error('Error when running "opencvDetector" with system(): \n%sRun "benchmark-orientation/matlab/external/methods/opencvDetector.py" python script to extract features first!\n', cmdout);                
