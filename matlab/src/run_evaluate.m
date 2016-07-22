@@ -39,6 +39,9 @@ function [] = run_evaluate(datasetName,numKey,startSeq,endSeq)
     sRoot = strjoin(tmp,'/');
     setup_path
 
+    % Allow to run script without multithreads
+    parameters.useMultithread = false;
+
     % mean scale normalization applied for BRISK and ORB, as they have a
     % different justification for scale. We make them have about the same
     % scale value range as SIFT. I am bit unsure where we got this thing,

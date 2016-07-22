@@ -65,22 +65,24 @@ function Allrepeatability = computeDescriptors(parameters)
     Allrepeatability = cell(size(combinations,1),1);
     for idxComb = 1:size(combinations,1)
         
-        lockFolder = '.lock';
-        if ~exist(lockFolder, 'dir')
-            mkdir(lockFolder);
+        if parameters.useMultithread
+            lockFolder = '.lock';
+            if ~exist(lockFolder, 'dir')
+                mkdir(lockFolder);
+            end
+
+            % Check if somebody else is running
+            lockfile = [lockFolder '/' combinations{idxComb,1} '-' ...
+                        strrep(combinations{idxComb,2},'/','-') '-' ...
+                        num2str(combinations{idxComb,3}) '.lock'];
+            if exist(lockfile,'file')
+                continue;
+            end
+            % Create a lock
+            lockfid = fopen(lockfile,'w');
+            fprintf(lockfid,'Working on it\n');
+            fclose(lockfid);
         end
-        
-        % Check if somebody else is running
-        lockfile = [lockFolder '/' combinations{idxComb,1} '-' ...
-                    strrep(combinations{idxComb,2},'/','-') '-' ...
-                    num2str(combinations{idxComb,3}) '.lock'];
-        if exist(lockfile,'file')
-            continue;
-        end
-        % Create a lock
-        lockfid = fopen(lockfile,'w');
-        fprintf(lockfid,'Working on it\n');
-        fclose(lockfid);
         
         
         res = evaluateDescriptors(combinations{idxComb,1}, ...
@@ -211,7 +213,7 @@ function Allrepeatability = computeDescriptors(parameters)
               num2str(numberOfKeypoints{1})], 'res', '-v7.3');
         
         % Release the lock
-        if exist(lockfile,'file')
+        if parameters.useMultithread && exist(lockfile,'file')
             delete(lockfile);
         end
     end
