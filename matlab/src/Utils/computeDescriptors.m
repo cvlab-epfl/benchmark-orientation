@@ -65,8 +65,13 @@ function Allrepeatability = computeDescriptors(parameters)
     Allrepeatability = cell(size(combinations,1),1);
     for idxComb = 1:size(combinations,1)
         
+        lockFolder = '.lock';
+        if ~exist(lockFolder, 'dir')
+            mkdir(lockFolder);
+        end
+        
         % Check if somebody else is running
-        lockfile = ['.lock/' combinations{idxComb,1} '-' ...
+        lockfile = [lockFolder '/' combinations{idxComb,1} '-' ...
                     strrep(combinations{idxComb,2},'/','-') '-' ...
                     num2str(combinations{idxComb,3}) '.lock'];
         if exist(lockfile,'file')
@@ -206,7 +211,9 @@ function Allrepeatability = computeDescriptors(parameters)
               num2str(numberOfKeypoints{1})], 'res', '-v7.3');
         
         % Release the lock
-        delete(lockfile);
+        if exist(lockfile,'file')
+            delete(lockfile);
+        end
     end
 
 end
