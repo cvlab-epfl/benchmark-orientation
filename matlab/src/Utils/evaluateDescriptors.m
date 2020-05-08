@@ -59,7 +59,8 @@ function [res] = evaluateDescriptors( trainset_name, testset_name, ...
     p.trainset_name = trainset_name;
     p.testset_name = testset_name;
     p.omp_num_threads = '16';
-    p.rootTest = [sRoot '/../data/' p.dataset_name '/test'];
+    % p.rootTest = [sRoot '/../data/' p.dataset_name '/test'];
+    p.rootTest = [parameters.pathDatasets '/' p.dataset_name '/test'];
     p.test_img_list_filename = fullfile(p.rootTest,'test_imgs.txt');
 
     setenv('OMP_NUM_THREADS', p.omp_num_threads);

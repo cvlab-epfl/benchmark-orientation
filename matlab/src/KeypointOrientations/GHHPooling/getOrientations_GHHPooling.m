@@ -104,7 +104,7 @@ function [feat] = getOrientations_GHHPooling(img_info, kp_file_name, p)
                     % Run the python script to test and get keypoints
                     prefix = ['LD_LIBRARY_PATH='];
                 end
-                com = ['(cd ' rootFolder '/../../learn-orientation-release/python-code/;' prefix '; OMP_NUM_THREADS=1 python runSingleTestWithFiles.py ' in_img ...
+                com = ['(cd ' rootFolder '/../../learn-orientation/python-code/;' prefix '; OMP_NUM_THREADS=1 python runSingleTestWithFiles.py ' in_img ...
                        ' ' in_kp ' ' config_file_full_name ' ' out ')'];
                 [status, result] = system(com);
 

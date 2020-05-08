@@ -39,6 +39,21 @@ function [] = run_evaluate(datasetName,numKey,startSeq,endSeq)
     sRoot = strjoin(tmp,'/');
     setup_path
 
+    % Allow to run script without multithreads
+    parameters.useMultithread = false;
+    
+    % Variable "parameters.pathDatasets" allow to store datasets out of "benchmark-orientation/data"
+    % Uncoment line bellow if datasets are stored out of "benchmark-orientation/data"
+    % parameters.pathDatasets = '/path/to/folder/data';
+    
+    if ~isfield(parameters, 'pathDatasets')
+        parameters.pathDatasets = [sRoot '/../data/'];
+    end
+    
+    if ~exist(parameters.pathDatasets, 'dir')
+        error(['Directory "' parameters.pathDatasets '" does not exist. Configure variable "parameters.pathDatasets" first']);
+    end
+    
     % mean scale normalization applied for BRISK and ORB, as they have a
     % different justification for scale. We make them have about the same
     % scale value range as SIFT. I am bit unsure where we got this thing,
@@ -110,7 +125,8 @@ function [] = run_evaluate(datasetName,numKey,startSeq,endSeq)
     parameters.parameters_dir_name = 'prelearned';
     
     % Detectors to test
-    parameters.bypassDisactivateDetector = {'EdgeFociD'};
+    % parameters.bypassDisactivateDetector = {'EdgeFociD'};
+    parameters.bypassDisactivateDetector = {'SIFT'};
     
     % Descriptors to test
     parameters.bypassDesactivateDescriptor = {'VGG', 'Daisy'};
@@ -121,7 +137,8 @@ function [] = run_evaluate(datasetName,numKey,startSeq,endSeq)
     cleanAll = 0;
     if cleanAll
         for i = 1:size(parameters.testsets,2) 
-            where = [sRoot '/../data/' parameters.testsets{i} '/test'];
+            % where = [sRoot '/../data/' parameters.testsets{i} '/test'];
+            where = [parameters.pathDatasets '/' parameters.testsets{i} '/test'];
             system(['rm -r ' where '/features']);
         end
     end
